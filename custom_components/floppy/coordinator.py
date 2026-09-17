@@ -126,8 +126,24 @@ class FloppyUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             offset += _PAGE_LIMIT
         return ids
 
-    def _build_episodes(self, calendar_results: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        """Project future calendar events to compact episode dicts."""
+    async def _fetch_history_media_ids(self) -> set[str]:
+        """Return the media_ids of recently watched episodes."""
+        ids: set[str] = set()
+        # Get recent history (last 7 days, limit 500)
+        try:
+            history = await self._get("/api/v1/history/", {"limit": 500})
+            for day_entry in history.get("results", []):
+                for entry in day_entry.get("entries", []):
+                    item = entry.get("item") or {}
+                    media_id = item.get("media_id")
+                    if media_id:
+                        ids.add(str(media_id))
+        except Exception as exception:
+            LOGGER.warning("Kunne ikke hente watch history: %s", exception)
+        return ids
+
+    def _build_episodes(self, calendar_results: list[dict[str, Any]], include_past: bool = False) -> list[dict[str, Any]]:
+        """Project calendar events to compact episode dicts."""
         now = datetime.now().astimezone()
         episodes: list[dict[str, Any]] = []
         for event in calendar_results:
@@ -136,7 +152,7 @@ class FloppyUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 event_dt = datetime.fromisoformat(str(event.get("datetime")))
             except (TypeError, ValueError):
                 continue
-            if event_dt < now:
+            if not include_past and event_dt < now:
                 continue
             media_id = str(item.get("media_id") or "")
             title = item.get("title") or item.get("localized_title") or "Ukendt"
@@ -200,8 +216,11 @@ class FloppyUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch data from Floppy."""
         try:
-            calendar_result = await self._get(API_CALENDAR, {"limit": 100})
-            episodes = self._build_episodes(calendar_result.get("results", []))
+            calendar_result = await self._get(API_CALENDAR, {"limit": 200})
+            # Future episodes
+            episodes = self._build_episodes(calendar_result.get("results", []), include_past=False)
+            # All episodes (including past) for unwatched detection
+            all_episodes = self._build_episodes(calendar_result.get("results", []), include_past=True)
 
             status_sets: dict[str, set[str]] = {}
             status_tasks = {
@@ -209,6 +228,8 @@ class FloppyUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 for mode, status in STATUS_MODES.items()
             }
             status_tasks[MODE_NOT_CAUGHT_UP] = self._fetch_not_caught_up_media_ids()
+            # Fetch watched history
+            status_tasks["unwatched_aired"] = self._fetch_history_media_ids()
             results = await asyncio.gather(
                 *status_tasks.values(), return_exceptions=True
             )
@@ -227,8 +248,21 @@ class FloppyUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 }
                 for mode in self._all_modes()
             }
+            # Add unwatched_aired mode
+            results_by_mode["unwatched_aired"] = {"count": 0, "results": []}
+
             for mode, entry in results_by_mode.items():
-                filtered = self._filter_episodes(episodes, mode, status_sets)
+                if mode == "unwatched_aired":
+                    # Filter: past episodes not in watched history
+                    watched = status_sets.get("unwatched_aired", set())
+                    now = datetime.now().astimezone()
+                    filtered = [
+                        e for e in all_episodes
+                        if e["media_id"] not in watched
+                        and datetime.fromisoformat(e["datetime"]) < now
+                    ]
+                else:
+                    filtered = self._filter_episodes(episodes, mode, status_sets)
                 entry["results"] = filtered
                 entry["count"] = len(filtered)
 

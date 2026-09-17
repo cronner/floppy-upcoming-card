@@ -30,6 +30,7 @@ const MODE_LABELS = {
   all: { da: "Alle", en: "All" },
   in_progress: { da: "I gang", en: "In progress" },
   not_caught_up: { da: "Ikke ajour", en: "Not caught up" },
+  unwatched_aired: { da: "Usete udgivne", en: "Unwatched aired" },
   planning: { da: "Planlagt", en: "Planning" },
   paused: { da: "Pauset", en: "Paused" },
   completed: { da: "Færdig", en: "Completed" },
@@ -119,7 +120,17 @@ class FloppyUpcomingCard extends LitElement {
   get _entity() {
     if (this.config.entity) return this.config.entity;
     const mode = this._activeMode;
-    return `sensor.floppy_upcoming_${mode === "all" ? "episodes" : mode}`;
+    const entityMap = {
+      all: "sensor.floppy_upcoming_episodes",
+      in_progress: "sensor.floppy_upcoming_in_progress",
+      not_caught_up: "sensor.floppy_upcoming_not_caught_up",
+      unwatched_aired: "sensor.floppy_upcoming_unwatched_aired",
+      planning: "sensor.floppy_upcoming_planning",
+      paused: "sensor.floppy_upcoming_paused",
+      completed: "sensor.floppy_upcoming_completed",
+      dropped: "sensor.floppy_upcoming_dropped",
+    };
+    return entityMap[mode] || `sensor.floppy_upcoming_${mode}`;
   }
 
   get _lang() {
@@ -373,7 +384,7 @@ class FloppyUpcomingCard extends LitElement {
   _renderFilterButtons() {
     if (!this._showFilter) return "";
     const lang = this._lang;
-    const modes = ["all", "in_progress", "not_caught_up", "planning"];
+    const modes = ["all", "in_progress", "not_caught_up", "unwatched_aired", "planning"];
     return html`
       <div class="filter-row">
         ${modes.map((mode) => html`

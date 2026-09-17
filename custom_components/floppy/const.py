@@ -25,6 +25,7 @@ MODE_PLANNING = "planning"
 MODE_PAUSED = "paused"
 MODE_COMPLETED = "completed"
 MODE_DROPPED = "dropped"
+MODE_UNWATCHED_AIRED = "unwatched_aired"
 
 MODES = (
     MODE_ALL,
@@ -34,6 +35,7 @@ MODES = (
     MODE_COMPLETED,
     MODE_PAUSED,
     MODE_DROPPED,
+    MODE_UNWATCHED_AIRED,
 )
 
 MODE_LABELS = {
@@ -44,6 +46,7 @@ MODE_LABELS = {
     MODE_COMPLETED: "Kommende færdig",
     MODE_PAUSED: "Kommende pauset",
     MODE_DROPPED: "Kommende droppet",
+    MODE_UNWATCHED_AIRED: "Usete udgivne",
 }
 
 # Floppy media status codes: 0=Planning, 1=In progress, 2=Paused,
