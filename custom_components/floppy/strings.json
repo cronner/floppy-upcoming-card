@@ -1,0 +1,35 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Floppy",
+        "description": "Connect Home Assistant to your Floppy media server. You can find your API key under Settings in Floppy.",
+        "data": {
+          "url": "Server URL",
+          "api_key": "API key",
+          "scan_interval": "Update interval"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to the Floppy server. Check the URL and that the server is running.",
+      "invalid_auth": "The API key was rejected. Check the key in Floppy."
+    },
+    "abort": {
+      "already_configured": "Floppy is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Floppy options",
+        "description": "Update the server URL, API key, and how often new episodes are fetched.",
+        "data": {
+          "url": "Server URL",
+          "api_key": "API key",
+          "scan_interval": "Update interval"
+        }
+      }
+    }
+  }
+}

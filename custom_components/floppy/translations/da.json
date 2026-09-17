@@ -1,0 +1,35 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Floppy",
+        "description": "Forbind Home Assistant til din Floppy medieserver. Din API-nøgle finder du under Indstillinger i Floppy.",
+        "data": {
+          "url": "Server URL",
+          "api_key": "API-nøgle",
+          "scan_interval": "Opdateringsinterval"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Kunne ikke forbinde til Floppy-serveren. Tjek URL'en, og at serveren kører.",
+      "invalid_auth": "API-nøglen blev afvist. Tjek nøglen i Floppy."
+    },
+    "abort": {
+      "already_configured": "Floppy er allerede konfigureret."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Floppy-indstillinger",
+        "description": "Opdater server-URL, API-nøgle og hvor tit nye episoder hentes.",
+        "data": {
+          "url": "Server URL",
+          "api_key": "API-nøgle",
+          "scan_interval": "Opdateringsinterval"
+        }
+      }
+    }
+  }
+}

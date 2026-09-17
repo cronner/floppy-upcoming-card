@@ -1,0 +1,11 @@
+{
+  "domain": "floppy",
+  "name": "Floppy",
+  "codeowners": ["@cronner"],
+  "config_flow": true,
+  "documentation": "https://github.com/cronner/floppy-upcoming-card",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/cronner/floppy-upcoming-card/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}
