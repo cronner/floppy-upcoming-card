@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from homeassistant.components.sensor import SensorEntity, SensorStateClass
 from homeassistant.core import HomeAssistant
@@ -11,9 +11,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN, MODE_LABELS, MODES
-
-if TYPE_CHECKING:
-    from .coordinator import FloppyConfigEntry, FloppyUpdateCoordinator
+from .coordinator import FloppyConfigEntry, FloppyUpdateCoordinator
 
 
 async def async_setup_entry(
@@ -49,7 +47,13 @@ class FloppyUpcomingSensor(CoordinatorEntity[FloppyUpdateCoordinator], SensorEnt
     @property
     def device_info(self) -> DeviceInfo:
         """Return the device info for Floppy."""
-        return self.coordinator.get_device(self.hass)
+        return DeviceInfo(
+            identifiers={(DOMAIN, self.coordinator.url)},
+            name="Floppy",
+            manufacturer="Floppy",
+            model="Media server",
+            configuration_url=self.coordinator.url,
+        )
 
     @property
     def native_value(self) -> int:

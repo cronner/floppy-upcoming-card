@@ -9,7 +9,6 @@ from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import (
     DataUpdateCoordinator,
@@ -33,9 +32,6 @@ from .const import (
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
-
-class FloppyConfigEntry(ConfigEntry[FloppyUpdateCoordinator]):
-    """Typed config entry whose runtime_data is the data coordinator."""
 
 _PAGE_LIMIT = 200
 _MAX_PAGES_PER_STATUS = 5
@@ -68,7 +64,6 @@ class FloppyUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._cache_file = os.path.join(
             hass.config.path(DOMAIN), "last_good.json"
         )
-        self.device = None
 
     @property
     def base_url(self) -> str:
@@ -261,16 +256,5 @@ class FloppyUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
         return MODES
 
-    def get_device(self, hass: HomeAssistant) -> Any:
-        """Return (and lazy-create) the device registry entry for Floppy."""
-        device_registry = dr.async_get(hass)
-        if self.device is None:
-            self.device = device_registry.async_get_or_create(
-                config_entry_id=self.config_entry.entry_id,
-                identifiers={(DOMAIN, self.url)},
-                name="Floppy",
-                manufacturer="Floppy",
-                model="Media server",
-                configuration_url=self.url,
-            )
-        return self.device
+class FloppyConfigEntry(ConfigEntry[FloppyUpdateCoordinator]):
+    """Typed config entry whose runtime_data is the data coordinator."""

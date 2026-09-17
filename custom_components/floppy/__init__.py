@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from homeassistant.components.http import StaticPathConfig
 from homeassistant.const import Platform
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN, LOGGER, URL_CARD
 from .coordinator import FloppyUpdateCoordinator
@@ -20,8 +20,7 @@ PLATFORMS: list[Platform] = [Platform.SENSOR]
 _CARD_SERVED = False
 
 
-@callback
-def async_serve_card(hass: HomeAssistant) -> None:
+async def async_serve_card(hass: HomeAssistant) -> None:
     """Serve the bundled card JavaScript as a static HA route."""
     global _CARD_SERVED  # noqa: PLW0603
     if _CARD_SERVED:
@@ -30,7 +29,9 @@ def async_serve_card(hass: HomeAssistant) -> None:
     if not os.path.isfile(card_file):
         LOGGER.warning("Floppy-kortet mangler: %s", card_file)
         return
-    hass.http.register_static_path(URL_CARD, Path(card_file), cache_headers=True)
+    await hass.http.async_register_static_paths(
+        [StaticPathConfig(URL_CARD, card_file, cache_headers=True)]
+    )
     _CARD_SERVED = True
 
 
@@ -46,7 +47,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: FloppyConfigEntry) -> bo
     entry.runtime_data = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))
-    async_serve_card(hass)
+    await async_serve_card(hass)
     return True
 
 
