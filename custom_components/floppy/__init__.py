@@ -15,7 +15,7 @@ from .coordinator import FloppyUpdateCoordinator
 if TYPE_CHECKING:
     from .coordinator import FloppyConfigEntry
 
-PLATFORMS: list[Platform] = [Platform.SENSOR]
+PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.CALENDAR]
 
 _CARD_SERVED = False
 

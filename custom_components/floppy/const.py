@@ -37,13 +37,13 @@ MODES = (
 )
 
 MODE_LABELS = {
-    MODE_ALL: "Upcoming episodes",
-    MODE_IN_PROGRESS: "Upcoming in progress",
-    MODE_NOT_CAUGHT_UP: "Upcoming not caught up",
-    MODE_PLANNING: "Upcoming planning",
-    MODE_COMPLETED: "Upcoming completed",
-    MODE_PAUSED: "Upcoming paused",
-    MODE_DROPPED: "Upcoming dropped",
+    MODE_ALL: "Kommende episoder",
+    MODE_IN_PROGRESS: "Kommende i gang",
+    MODE_NOT_CAUGHT_UP: "Kommende ikke ajour",
+    MODE_PLANNING: "Kommende planlagt",
+    MODE_COMPLETED: "Kommende færdig",
+    MODE_PAUSED: "Kommende pauset",
+    MODE_DROPPED: "Kommende droppet",
 }
 
 # Floppy media status codes: 0=Planning, 1=In progress, 2=Paused,
