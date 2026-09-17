@@ -122,7 +122,6 @@ class FloppyOptionsFlowHandler(config_entries.OptionsFlow):
 
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
         """Initialize the options flow."""
-        super().__init__(config_entry)
         self._entry = config_entry
 
     async def async_step_init(
